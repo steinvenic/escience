@@ -2,3 +2,4 @@
 /venv/
 .idea/
 *.tar.gz
+*.7z

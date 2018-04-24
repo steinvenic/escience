@@ -11,7 +11,6 @@
 """
 import requests
 import sys,configparser
-conf = configparser.ConfigParser()
-conf.read('conf.cfg')
-name = conf.get('user_info','userName')
-print(name)
+str = '%2Fdir_1%2Ftest.7z%2Fdd'
+str = str.split('%2F')[-1]
+print(str)

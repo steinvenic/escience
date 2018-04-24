@@ -47,11 +47,6 @@ else:
     for i in str:
         m = i.split('=')
         params_dict.update({m[0]:m[1]})
-
-
-    #     for h in i:
-    #         n = h.split('=')
-    #         params_dict.update({n[0]:n[1]})
     pp = pprint.PrettyPrinter(indent=4)
     pp.pprint(params_dict)
 

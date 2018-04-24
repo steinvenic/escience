@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 # encoding: utf-8
-
-
 """
 @version: python2.7
 @author: ‘eric‘
@@ -13,7 +11,13 @@
 @time: 18/4/24 下午2:41
 """
 
-import requests,sys
+import requests,sys,configparser
+conf = configparser.ConfigParser()
+conf.read('conf.cfg')
+file_path = sys.argv[1]
+
+userName = conf.get('user_info','userName')
+passwd = conf.get('user_info','passwd')
 def get_oauth():
     global_params = {}
     url ='https://passport.escience.cn/oauth2/authorize?response_type=code&redirect_uri=http://ddl.escience.cn/system/login/token&client_id=87142&theme=full&state=http://ddl.escience.cn/pan/list'
@@ -47,8 +51,8 @@ def oauth():
     data = {   'clientId': '87142',
                 'clientName': '团队文档库',
                 'pageinfo': 'checkPassword',
-                'password': 'Aaa00123',
-                'userName': '761701732@qq.com'}
+                'password': '%s' % passwd,
+                'userName': '%s' % userName}
     requests.post(url,headers=headers,cookies=cookies,verify=False,data=data)
     return global_params
 
@@ -72,9 +76,9 @@ def oauth_1():
                   '(KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36'}
     data ={   'act': 'Validate',
     'pageinfo': 'userinfo',
-    'password': 'Aaa00123',
+    'password': '%s' % passwd,
     'theme': 'full',
-    'userName': '761701732@qq.com'}
+    'userName': '%s' % userName}
     r = requests.post(url,headers=headers,data=data,verify=False,cookies=cookies,allow_redirects=False)
     r_location = r.headers['Location']
     global_params.update({'url_location':r_location})
@@ -102,7 +106,7 @@ def location():
 def get_file():
     global_params = location()
     cookies = global_params['cookies']
-    url = 'http://ddl.escience.cn/pan/download?path=%2FLinux_Chales_crack_4.2.5.tar.gz'
+    url = 'http://ddl.escience.cn/pan/download?path=%s' % file_path
     headers = {   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
     'Accept-Encoding': 'gzip, deflate',
     'Accept-Language': 'zh-CN,zh;q=0.9',
@@ -115,7 +119,7 @@ def get_file():
 
     res = requests.get(url,headers=headers,verify=False,cookies=cookies,stream=True)
     res.raise_for_status()
-    playFile = open('Linux_Chales_crack_4.2.5.tar.gz', 'wb')
+    playFile = open('%s' % file_path.split('%2F')[-1], 'wb')
     for chunk in res.iter_content(1024):
         playFile.write(chunk)
     playFile.close()
