@@ -13,8 +13,7 @@
 @time: 18/4/24 下午2:41
 """
 
-import requests
-
+import requests,sys
 def get_oauth():
     global_params = {}
     url ='https://passport.escience.cn/oauth2/authorize?response_type=code&redirect_uri=http://ddl.escience.cn/system/login/token&client_id=87142&theme=full&state=http://ddl.escience.cn/pan/list'
@@ -100,7 +99,6 @@ def location():
     global_params.update({'cookies':r.cookies})
     return global_params
 
-
 def get_file():
     global_params = location()
     cookies = global_params['cookies']
@@ -115,10 +113,10 @@ def get_file():
     'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 '
                   '(KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36'}
 
-    res = requests.get(url,headers=headers,verify=False,cookies=cookies)
+    res = requests.get(url,headers=headers,verify=False,cookies=cookies,stream=True)
     res.raise_for_status()
     playFile = open('Linux_Chales_crack_4.2.5.tar.gz', 'wb')
-    for chunk in res.iter_content(100000):
+    for chunk in res.iter_content(1024):
         playFile.write(chunk)
     playFile.close()
 
