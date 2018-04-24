@@ -14,6 +14,10 @@ import requests
 
 User_Agent = r'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36'
 X_Requested = 'XMLHttpRequest'
+proxies = {
+    "http":"192.168.1.163:8888",
+}
+proxies = { "http": "192.168.1.163:8888" }
 def get_cookie():
     params = {}
     url = 'http://ddl.escience.cn/pan/list'
@@ -26,7 +30,7 @@ def get_cookie():
         'Accept-Encoding': 'gzip, deflate',
         'Accept-Language': 'zh-CN,zh;q=0.9',
     }
-    params.update({'cookie':requests.get(url,headers=header).cookies})
+    params.update({'cookie':requests.get(url,headers=header,proxies=proxies).cookies})
     return params
 
 def login():
@@ -51,7 +55,7 @@ def login():
         'clientName':'团队文档库',
         'pageinfo':'checkPassword',
     }
-    r = requests.post(url,headers=header,cookies=cookie,verify=False,data=data).headers
+    r = requests.post(url,headers=header,cookies=cookie,verify=False,data=data,proxies=proxies).headers
     return params
 
 def oauth2():
@@ -78,7 +82,7 @@ def oauth2():
         'pageinfo':'userinfo',
         'theme':'full',
     }
-    r = requests.post(url,headers=header,cookies=cookie,data=data,verify=False)
+    r = requests.post(url,headers=header,cookies=cookie,data=data,verify=False,proxies=proxies)
     return params
 
 def get_file():
@@ -95,7 +99,7 @@ def get_file():
         'Accept-Encoding': 'gzip, deflate',
         'Accept-Language': 'zh-CN,zh;q=0.9',
     }
-    res = requests.get(url, headers=headers,cookies=cookie,verify=False)
+    res = requests.get(url, headers=headers,cookies=cookie,verify=False,proxies=proxies)
     print(res)
     res.raise_for_status()
     playFile = open('Linux_Chales_crack_4.2.5.tar.gz', 'wb')
