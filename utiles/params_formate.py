@@ -16,19 +16,7 @@
 import pprint,urllib3
 from urllib.parse import unquote
 str = '''
-
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36
-Accept-Encoding: gzip, deflate, br
-Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8
-Connection: keep-alive
-Accept-Language: zh-CN,zh;q=0.9
-Cache-Control: max-age=0
-Host: ddl.escience.cn
-Origin: https://passport.escience.cn
-Referer: https://passport.escience.cn/oauth2/authorize?response_type=code&redirect_uri=http://ddl.escience.cn/system/login/token&client_id=87142&theme=full&state=http://ddl.escience.cn/pan/list
-Upgrade-Insecure-Requests: 1
-Cookie: JSESSIONID=2DD7CEAF782F66C6905615EBD968606F-n1; AUTO_FILL="761701732@qq.com"
-
+{"tokenKey":"1524672146487","total":3,"currentResource":{"shared":null,"createTime":"2018-04-21 01:27","fileType":"","parentRid":"\/","itemType":"Folder","lastEditor":"杨力","contentType":"","size":"0 B","searchResult":false,"lastEditorUid":"761701732@qq.com","rid":"","lastVersion":0,"fileName":null,"modofyTime":"2018-04-21 01:27"},"order":"timeDesc","nextBeginNum":"0","path":[],"children":[{"shared":false,"createTime":"2018-04-25 01:19","fileType":"","parentRid":"","itemType":"Folder","lastEditor":"杨力","contentType":"","size":"0 B","searchResult":false,"lastEditorUid":"761701732@qq.com","rid":"%2Fdir_1","lastVersion":15,"fileName":"dir_1","modofyTime":"2018-04-25 01:18"},{"shared":false,"createTime":"2018-04-21 17:11","fileType":"gz","parentRid":"","itemType":"DFile","lastEditor":"杨力","contentType":"application\/x-gzip","size":"59.6 MB","searchResult":false,"lastEditorUid":"761701732@qq.com","rid":"%2FLinux_Chales_crack_4.2.5.tar.gz","lastVersion":10,"fileName":"Linux_Chales_crack_4.2.5.tar.gz","modofyTime":"2018-04-21 17:11"},{"shared":false,"createTime":"2018-04-21 01:30","fileType":"gz","parentRid":"","itemType":"DFile","lastEditor":"杨力","contentType":"application\/x-gzip","size":"307.5 MB","searchResult":false,"lastEditorUid":"761701732@qq.com","rid":"%2Fjira.tar.gz","lastVersion":1,"fileName":"jira.tar.gz","modofyTime":"2018-04-21 01:30"}],"showSearch":true,"size":3}
 '''
 params_dict = {}
 if ':'  in str:

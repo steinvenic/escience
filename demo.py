@@ -11,16 +11,17 @@
 @time: 18/4/24 下午2:41
 """
 
-import requests,sys,configparser
+import requests,sys,configparser,json
 conf = configparser.ConfigParser()
 conf.read('conf.cfg')
-file_path = sys.argv[1]
+# file_path = sys.argv[1]
+file_path = '%2Fdir_1%2Ftest.7z'
 
 userName = conf.get('user_info','userName')
 passwd = conf.get('user_info','passwd')
 def get_oauth():
     global_params = {}
-    url ='https://passport.escience.cn/oauth2/authorize?response_type=code&redirect_uri=http://ddl.escience.cn/system/login/token&client_id=87142&theme=full&state=http://ddl.escience.cn/pan/list'
+    url ='https://passport.escience.cn/oauth2/authorize?response_type=code&redirect_uri=http://ddl.escience.cn/system/login/token&client_id=87143&theme=full&state=http://ddl.escience.cn/pan/list'
     headers = {   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
     'Accept-Encoding': 'gzip, deflate, br',
     'Accept-Language': 'zh-CN,zh;q=0.9',
@@ -102,6 +103,28 @@ def location():
     r = requests.get(url=location_url,headers=headers,cookies=cookies,allow_redirects=False)
     global_params.update({'cookies':r.cookies})
     return global_params
+def list_file():
+    global_params = location()
+    cookies = global_params['cookies']
+    headers = {   'Accept': 'application/json, text/javascript, */*; q=0.01',
+    'Accept-Encoding': 'gzip, deflate',
+    'Accept-Language': 'zh-CN,zh;q=0.9',
+    'Connection': 'keep-alive',
+    'Content-Length': '47',
+    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+    'Host': 'ddl.escience.cn',
+    'Origin': 'http://ddl.escience.cn',
+    'Referer': 'http://ddl.escience.cn/pan/list',
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) '
+                  'AppleWebKit/537.75.14 (KHTML, like Gecko) Version/7.0.3 '
+                  'Safari/7046A194A',
+    'X-Requested-With': 'XMLHttpRequest'}
+    url = 'http://ddl.escience.cn/pan/list?func=query'
+    data = {'keyWord': '', 'path': '', 'sortType': '', 'tokenKey': '1524672146487'}
+    r = requests.get(url=url, headers=headers, cookies=cookies,data=data, allow_redirects=False)
+    r_dict = json.loads(r.text)
+    print(r_dict)
+
 
 def get_file():
     global_params = location()
@@ -124,7 +147,7 @@ def get_file():
         playFile.write(chunk)
     playFile.close()
 
+list_file()
 
-get_file()
 
 

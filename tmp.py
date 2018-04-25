@@ -10,7 +10,7 @@
 @time: 2018/4/22 3:34
 """
 import requests
-import sys,configparser
-str = '%2Fdir_1%2Ftest.7z%2Fdd'
-str = str.split('%2F')[-1]
-print(str)
+import sys,configparser,pprint
+pp = pprint.PrettyPrinter(indent=4)
+pp.pprint({'Host': 'ddl.escience.cn', 'Connection': 'keep-alive', 'Content-Length': '47', 'Accept': 'application/json, text/javascript', 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'Referer': 'http://ddl.escience.cn/pan/list'})
+
