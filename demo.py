@@ -10,18 +10,22 @@
 @file: demo.py
 @time: 18/4/24 下午2:41
 """
-
+import click
 import requests,sys,configparser,json
+from prettytable import PrettyTable
+from urllib.parse import unquote
+
 conf = configparser.ConfigParser()
 conf.read('conf.cfg')
 # file_path = sys.argv[1]
-file_path = '%2Fdir_1%2Ftest.7z'
+# file_path = '%2Fdir_1%2Ftest.7z'
 
 userName = conf.get('user_info','userName')
 passwd = conf.get('user_info','passwd')
 search_keyord = 'test'
+global_params = {}
 def get_oauth():
-    global_params = {}
+
     url ='https://passport.escience.cn/oauth2/authorize?response_type=code&redirect_uri=http://ddl.escience.cn/system/login/token&client_id=87143&theme=full&state=http://ddl.escience.cn/pan/list'
     headers = {   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
     'Accept-Encoding': 'gzip, deflate, br',
@@ -104,7 +108,8 @@ def location():
     r = requests.get(url=location_url,headers=headers,cookies=cookies,allow_redirects=False)
     global_params.update({'cookies':r.cookies})
     return global_params
-def list_file():
+
+def list_file(search_keyord):
     global_params = location()
     cookies = global_params['cookies']
     headers = {   'Accept': 'application/json, text/javascript, */*; q=0.01',
@@ -124,12 +129,35 @@ def list_file():
     data = {'keyWord': '%s'% search_keyord, 'path': '', 'sortType': '', 'tokenKey': '1524672146487'}
     r = requests.get(url=url, headers=headers, cookies=cookies,data=data, allow_redirects=False)
     r_dict = json.loads(r.text)['children']
-    return r_dict
+    d = [i for i in r_dict if i['itemType']!='Folder']
+    x = PrettyTable()
+    x.field_names = ["ID", "FileName", "CreateTime", "Size"]
+    m = 0
+    id_file_dict = {}
+    for i in d:
+        x.add_row([m,i['fileName'],i['modofyTime'],i['size']])
+        id_file_dict.update({m:i['rid']})
+        m+=1
+    global_params.update({'id_file_dict':id_file_dict})
+    global_params.update({'cookies':cookies})
+    global_params.update({'x':x})
+    return global_params
 
-
-def get_file():
-    global_params = location()
+@click.command()
+@click.option('--d', default=0, help='Download Files')
+@click.option('--s', default='', help='Search Files')
+def get_file(**options):
+    search_keyord = options['s']
+    download_id = options['d']
+    if search_keyord !='':
+        list_file(search_keyord)
+        print(global_params['x'])
+        return
+    list_file(search_keyord)
+    id_file_dict = global_params['id_file_dict']
+    file_path = id_file_dict[download_id]
     cookies = global_params['cookies']
+
     url = 'http://ddl.escience.cn/pan/download?path=%s' % file_path
     headers = {   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
     'Accept-Encoding': 'gzip, deflate',
@@ -140,15 +168,15 @@ def get_file():
     'Upgrade-Insecure-Requests': '1',
     'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 '
                   '(KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36'}
-
     res = requests.get(url,headers=headers,verify=False,cookies=cookies,stream=True)
     res.raise_for_status()
-    playFile = open('%s' % file_path.split('%2F')[-1], 'wb')
+    playFile = open('%s' % unquote(file_path.split('%2F')[-1]), 'wb')
     for chunk in res.iter_content(1024):
         playFile.write(chunk)
     playFile.close()
 
-list_file()
+if __name__ == '__main__':
+    get_file()
 
 
 
