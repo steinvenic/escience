@@ -19,6 +19,7 @@ file_path = '%2Fdir_1%2Ftest.7z'
 
 userName = conf.get('user_info','userName')
 passwd = conf.get('user_info','passwd')
+search_keyord = 'test'
 def get_oauth():
     global_params = {}
     url ='https://passport.escience.cn/oauth2/authorize?response_type=code&redirect_uri=http://ddl.escience.cn/system/login/token&client_id=87143&theme=full&state=http://ddl.escience.cn/pan/list'
@@ -120,10 +121,10 @@ def list_file():
                   'Safari/7046A194A',
     'X-Requested-With': 'XMLHttpRequest'}
     url = 'http://ddl.escience.cn/pan/list?func=query'
-    data = {'keyWord': '', 'path': '', 'sortType': '', 'tokenKey': '1524672146487'}
+    data = {'keyWord': '%s'% search_keyord, 'path': '', 'sortType': '', 'tokenKey': '1524672146487'}
     r = requests.get(url=url, headers=headers, cookies=cookies,data=data, allow_redirects=False)
-    r_dict = json.loads(r.text)
-    print(r_dict)
+    r_dict = json.loads(r.text)['children']
+    return r_dict
 
 
 def get_file():
