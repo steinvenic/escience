@@ -11,22 +11,26 @@
 @time: 18/4/24 下午2:41
 """
 import click
-import requests,sys,configparser,json
+import requests,configparser,json
 from prettytable import PrettyTable
 from urllib.parse import unquote
 
 conf = configparser.ConfigParser()
 conf.read('conf.cfg')
-# file_path = sys.argv[1]
-# file_path = '%2Fdir_1%2Ftest.7z'
-
 userName = conf.get('user_info','userName')
 passwd = conf.get('user_info','passwd')
-search_keyord = 'test'
+#global_params保存每次请求的返回参数
 global_params = {}
-def get_oauth():
 
-    url ='https://passport.escience.cn/oauth2/authorize?response_type=code&redirect_uri=http://ddl.escience.cn/system/login/token&client_id=87143&theme=full&state=http://ddl.escience.cn/pan/list'
+#请求登录界面
+def oauth_page():
+    '''
+    client_id暂不知其作用
+    :return: cookieJar
+    '''
+    url ='https://passport.escience.cn/oauth2/authorize?response_type=code&redirect_uri=' \
+         'http://ddl.escience.cn/system/login/token&client_id=87143&theme=full&state=' \
+         'http://ddl.escience.cn/pan/list'
     headers = {   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
     'Accept-Encoding': 'gzip, deflate, br',
     'Accept-Language': 'zh-CN,zh;q=0.9',
@@ -38,8 +42,9 @@ def get_oauth():
     global_params.update({'cookies':requests.get(url,headers=headers,verify=False).cookies})
     return global_params
 
+#身份认证
 def oauth():
-    global_params = get_oauth()
+    global_params = oauth_page()
     cookies = global_params['cookies']
     headers = {   'Accept': 'application/json, text/javascript, */*; q=0.01',
     'Accept-Encoding': 'gzip, deflate, br',
@@ -62,7 +67,8 @@ def oauth():
     requests.post(url,headers=headers,cookies=cookies,verify=False,data=data)
     return global_params
 
-def oauth_1():
+#再次认证身份
+def oauth_again():
     global_params = oauth()
     cookies = global_params['cookies']
     url = 'https://passport.escience.cn/oauth2/authorize?client_id=87142&redirect_uri=http://' \
@@ -90,8 +96,9 @@ def oauth_1():
     global_params.update({'url_location':r_location})
     return global_params
 
+#访问重定向地址
 def location():
-    global_params = oauth_1()
+    global_params = oauth_again()
     location_url = global_params['url_location']
     cookies = global_params['cookies']
     headers = {   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
@@ -109,6 +116,7 @@ def location():
     global_params.update({'cookies':r.cookies})
     return global_params
 
+#获取搜索文件的路径，供下载文件使用
 def list_file(search_keyord):
     global_params = location()
     cookies = global_params['cookies']
@@ -135,11 +143,14 @@ def list_file(search_keyord):
 
         }
     r = requests.post(url=url, headers=headers, cookies=cookies,data=data, allow_redirects=False)
-    r_dict = json.loads(r.text)['children']
+
+
+    r_dict = json.loads(r.text)['children']#搜索到的结果集
     d = [i for i in r_dict if i['itemType']!='Folder']
     x = PrettyTable()
     x.field_names = ["ID", "FileName", "CreateTime", "Size"]
-    m = 0
+
+    m = 0#文件ID
     id_file_dict = {}
     for i in d:
         x.add_row([m,i['fileName'],i['modofyTime'],i['size']])
@@ -147,7 +158,7 @@ def list_file(search_keyord):
         m+=1
     global_params.update({'id_file_dict':id_file_dict})
     global_params.update({'cookies':cookies})
-    global_params.update({'x':x})
+    global_params.update({'table_list':x})
     return global_params
 
 @click.command()
@@ -157,9 +168,12 @@ def get_file(**options):
     search_keyord = options['s']
     download_id = options['d']
     if search_keyord !='':
+        conf.set('user_info', 'search_keyord', search_keyord)
+        conf.write(open("conf.cfg", "w"))
         list_file(search_keyord)
-        print(global_params['x'])
+        print(global_params['table_list'])
         return
+    search_keyord = conf.get('user_info','search_keyord')
     list_file(search_keyord)
     id_file_dict = global_params['id_file_dict']
     file_path = id_file_dict[download_id]

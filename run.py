@@ -9,3 +9,7 @@
 @file: run.py
 @time: 2018/4/27 1:45
 """
+import os
+ss =os.popen('python demo.py -s "test"')
+print(ss)
+
