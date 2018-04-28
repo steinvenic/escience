@@ -9,29 +9,43 @@
 @file: tmp.py
 @time: 2018/4/22 3:34
 """
+
+import os
+from urllib.request import urlopen
+
 import requests
-import sys,configparser,pprint
-from prettytable import PrettyTable
-
-import click
+from tqdm import tqdm
 
 
-import click
+def download_from_url(url, dst):
+    """
+    @param: url to download file
+    @param: dst place to put the file
+    """
+    file_size = int(urlopen(url).info().get('Content-Length', -1))
 
-def print_version(ctx, param, value):
-    if not value or ctx.resilient_parsing:
-        return
-    click.echo('Version 1.0')
-    click.echo(param)
-    ctx.exit()
 
-@click.command()
-@click.option('--version', is_flag=True, callback=print_version,
-              expose_value=False, is_eager=True)
-@click.option('--name', default='Ethan', help='name')
-@click.option('--param', default='', help='name')
-def hello(name):
-    click.echo('Hello %s!' % name)
+
+    if os.path.exists(dst):
+        first_byte = os.path.getsize(dst)
+    else:
+        first_byte = 0
+    if first_byte >= file_size:
+        return file_size
+    header = {"Range": "bytes=%s-%s" % (first_byte, file_size)}
+    pbar = tqdm(
+        total=file_size, initial=first_byte,
+        unit='B', unit_scale=True, desc=url.split('/')[-1])
+    req = requests.get(url, headers=header, stream=True)
+    with(open(dst, 'ab')) as f:
+        for chunk in req.iter_content(chunk_size=1024):
+            if chunk:
+                f.write(chunk)
+                pbar.update(1024)
+    pbar.close()
+    return file_size
+
 
 if __name__ == '__main__':
-    hello()
+    url = "http://newoss.maiziedu.com/machinelearning/pythonrm/pythonrm5.mp4"
+    download_from_url(url, "./new.mp4")

@@ -16,7 +16,7 @@
 import pprint,urllib3
 from urllib.parse import unquote
 str = '''
-{"tokenKey":"1524672146487","total":3,"currentResource":{"shared":null,"createTime":"2018-04-21 01:27","fileType":"","parentRid":"\/","itemType":"Folder","lastEditor":"杨力","contentType":"","size":"0 B","searchResult":false,"lastEditorUid":"761701732@qq.com","rid":"","lastVersion":0,"fileName":null,"modofyTime":"2018-04-21 01:27"},"order":"timeDesc","nextBeginNum":"0","path":[],"children":[{"shared":false,"createTime":"2018-04-25 01:19","fileType":"","parentRid":"","itemType":"Folder","lastEditor":"杨力","contentType":"","size":"0 B","searchResult":false,"lastEditorUid":"761701732@qq.com","rid":"%2Fdir_1","lastVersion":15,"fileName":"dir_1","modofyTime":"2018-04-25 01:18"},{"shared":false,"createTime":"2018-04-21 17:11","fileType":"gz","parentRid":"","itemType":"DFile","lastEditor":"杨力","contentType":"application\/x-gzip","size":"59.6 MB","searchResult":false,"lastEditorUid":"761701732@qq.com","rid":"%2FLinux_Chales_crack_4.2.5.tar.gz","lastVersion":10,"fileName":"Linux_Chales_crack_4.2.5.tar.gz","modofyTime":"2018-04-21 17:11"},{"shared":false,"createTime":"2018-04-21 01:30","fileType":"gz","parentRid":"","itemType":"DFile","lastEditor":"杨力","contentType":"application\/x-gzip","size":"307.5 MB","searchResult":false,"lastEditorUid":"761701732@qq.com","rid":"%2Fjira.tar.gz","lastVersion":1,"fileName":"jira.tar.gz","modofyTime":"2018-04-21 01:30"}],"showSearch":true,"size":3}
+path=&sortType=&tokenKey=1524916899135&keyWord=jira
 '''
 params_dict = {}
 if ':'  in str:

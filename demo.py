@@ -126,8 +126,15 @@ def list_file(search_keyord):
                   'Safari/7046A194A',
     'X-Requested-With': 'XMLHttpRequest'}
     url = 'http://ddl.escience.cn/pan/list?func=query'
-    data = {'keyWord': '%s'% search_keyord, 'path': '', 'sortType': '', 'tokenKey': '1524672146487'}
-    r = requests.get(url=url, headers=headers, cookies=cookies,data=data, allow_redirects=False)
+    data = {
+
+        'path': '',
+        'sortType': '',
+        'tokenKey': '1524672146487',
+        'keyWord': '%s' % search_keyord,
+
+        }
+    r = requests.post(url=url, headers=headers, cookies=cookies,data=data, allow_redirects=False)
     r_dict = json.loads(r.text)['children']
     d = [i for i in r_dict if i['itemType']!='Folder']
     x = PrettyTable()
@@ -144,8 +151,8 @@ def list_file(search_keyord):
     return global_params
 
 @click.command()
-@click.option('--d', default=0, help='Download Files')
-@click.option('--s', default='', help='Search Files')
+@click.option('-d', default=0, help='Download Files')
+@click.option('-s', default='', help='Search Files')
 def get_file(**options):
     search_keyord = options['s']
     download_id = options['d']
