@@ -15,6 +15,7 @@ import requests,configparser,json
 from prettytable import PrettyTable
 from urllib.parse import unquote
 
+requests.packages.urllib3.disable_warnings()
 conf = configparser.ConfigParser()
 conf.read('conf.cfg')
 userName = conf.get('user_info','userName')
