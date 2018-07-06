@@ -7,7 +7,7 @@
 @contact: steinven@qq.com
 @site: 00123.ml:8000
 @software: PyCharm
-@file: demo.py
+@file: escience.py
 @time: 18/4/24 下午2:41
 """
 from contextlib import closing
@@ -208,7 +208,7 @@ class ProgressBar(object):
 
 
 @click.command()
-@click.option('-d', default=0, help='Download Files')
+@click.option('-d', default=0, help='Download Files By Index Number')
 @click.option('-s', default='', help='Search Files')
 def get_file(**options):
     search_keyord = options['s']
