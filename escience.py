@@ -11,6 +11,7 @@
 @time: 18/4/24 下午2:41
 """
 import os
+import sys
 from contextlib import closing
 from urllib.parse import unquote
 
@@ -20,6 +21,7 @@ import json
 import requests
 from prettytable import PrettyTable
 
+from utiles.logger import logger
 from utiles.process_bar import ProgressBar
 
 requests.packages.urllib3.disable_warnings()
@@ -63,7 +65,10 @@ class escience:
                 'pageinfo': 'checkPassword',
                 'password': '%s' % self.passwd,
                 'userName': '%s' % self.userName}
-        self.session.post(url, headers=self.header, verify=False, data=data)
+        r = self.session.post(url, headers=self.header, verify=False, data=data)
+        if 'true' not in r.text:
+            logger().error('登录失败！请在配置文件填写正确的账号和密码')
+            sys.exit(0)
 
     def oauth_again(self):
         url = 'https://passport.escience.cn/oauth2/authorize?client_id=87142&redirect_uri=http://' \
@@ -131,7 +136,12 @@ def get_file(**options):
     search_keyord = conf.get('user_info', 'search_keyord')
     global_params = e.list_file(search_keyord)
     id_file_dict = global_params['id_file_dict']
-    file_path = id_file_dict[download_id]
+    logger().info('id_file_dict:'+str(id_file_dict))
+    try:
+        file_path = id_file_dict[download_id]
+    except KeyError:
+        logger().error("ID对应文件不存在，请检查，或重新搜索！")
+        sys.exit(0)
 
     url = 'http://ddl.escience.cn/pan/download?path=%s' % file_path
 
