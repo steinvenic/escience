@@ -37,88 +37,10 @@ class escience:
         self.userName = userName
         self.passwd = passwd
         self.session = requests.session()
-
-    def oauth_page(self):
-        url = 'https://passport.escience.cn/oauth2/authorize?response_type=code&redirect_uri=' \
-              'http://ddl.escience.cn/system/login/token&client_id=87143&theme=full&state=' \
-              'http://ddl.escience.cn/pan/list'
-        headers = {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-                   'Accept-Encoding': 'gzip, deflate, br',
-                   'Accept-Language': 'zh-CN,zh;q=0.9',
-                   'Connection': 'keep-alive',
-                   'Host': 'passport.escience.cn',
-                   'Upgrade-Insecure-Requests': '1',
-                   'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 '
-                                 '(KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36'}
-        self.session.get(url, headers=headers, verify=False)
-
-    def oauth(self):
-        headers = {'Accept': 'application/json, text/javascript, */*; q=0.01',
-                   'Accept-Encoding': 'gzip, deflate, br',
-                   'Accept-Language': 'zh-CN,zh;q=0.9',
-                   'Connection': 'keep-alive',
-                   'Content-Length': '140',
-                   'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                   'Host': 'passport.escience.cn',
-                   'Origin': 'https://passport.escience.cn',
-                   'Referer': 'https://passport.escience.cn/oauth2/authorize?response_type=code&redirect_uri=http://ddl.escience.cn/system/login/token&client_id=87142&theme=full&state=http://ddl.escience.cn/pan/list',
-                   'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 '
-                                 '(KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36',
-                   'X-Requested-With': 'XMLHttpRequest'}
-        url = 'https://passport.escience.cn/oauth2/authorize'
-        data = {'clientId': '87142',
-                'clientName': '团队文档库',
-                'pageinfo': 'checkPassword',
-                'password': '%s' % self.passwd,
-                'userName': '%s' % self.userName}
-        self.session.post(url, headers=headers, verify=False, data=data)
-
-    def oauth_again(self):
-        url = 'https://passport.escience.cn/oauth2/authorize?client_id=87142&redirect_uri=http://' \
-              'ddl.escience.cn/system/login/token&response_type=code&state=http://ddl.escience.cn/pan/list&theme=full'
-        headers = {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-                   'Accept-Encoding': 'gzip, deflate, br',
-                   'Accept-Language': 'zh-CN,zh;q=0.9',
-                   'Cache-Control': 'max-age=0',
-                   'Connection': 'keep-alive',
-                   'Content-Length': '87',
-                   'Content-Type': 'application/x-www-form-urlencoded',
-                   'Host': 'passport.escience.cn',
-                   'Origin': 'https://passport.escience.cn',
-                   'Referer': 'https://passport.escience.cn/oauth2/authorize?response_type=code&redirect_uri=http://ddl.escience.cn/system/login/token&client_id=87142&theme=full&state=http://ddl.escience.cn/pan/list',
-                   'Upgrade-Insecure-Requests': '1',
-                   'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 '
-                                 '(KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36'}
-        data = {'act': 'Validate',
-                'pageinfo': 'userinfo',
-                'password': '%s' % passwd,
-                'theme': 'full',
-                'userName': '%s' % userName}
-        r = self.session.post(url, headers=headers, data=data, verify=False, allow_redirects=False)
-        r_location = r.headers['Location']
-        return r_location
-
-    def location(self):
-        location_url = self.oauth_again()
-        headers = {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-                   'Accept-Encoding': 'gzip, deflate, br',
-                   'Accept-Language': 'zh-CN,zh;q=0.9',
-                   'Cache-Control': 'max-age=0',
-                   'Connection': 'keep-alive',
-                   'Host': 'ddl.escience.cn',
-                   'Origin': 'https://passport.escience.cn',
-                   'Referer': 'https://passport.escience.cn/oauth2/authorize?response_type=code&redirect_uri=http://ddl.escience.cn/system/login/token&client_id=87142&theme=full&state=http://ddl.escience.cn/pan/list',
-                   'Upgrade-Insecure-Requests': '1',
-                   'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 '
-                                 '(KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36'}
-        self.session.post(url=location_url, headers=headers, allow_redirects=False)
-
-    def list_file(self, search_keyword):
-        headers = {'Accept': 'application/json, text/javascript, */*; q=0.01',
+        self.header = {'Accept': 'application/json, text/javascript, */*; q=0.01',
                    'Accept-Encoding': 'gzip, deflate',
                    'Accept-Language': 'zh-CN,zh;q=0.9',
                    'Connection': 'keep-alive',
-                   'Content-Length': '47',
                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
                    'Host': 'ddl.escience.cn',
                    'Origin': 'http://ddl.escience.cn',
@@ -127,6 +49,39 @@ class escience:
                                  'AppleWebKit/537.75.14 (KHTML, like Gecko) Version/7.0.3 '
                                  'Safari/7046A194A',
                    'X-Requested-With': 'XMLHttpRequest'}
+
+    def oauth_page(self):
+        url = 'https://passport.escience.cn/oauth2/authorize?response_type=code&redirect_uri=' \
+              'http://ddl.escience.cn/system/login/token&client_id=87143&theme=full&state=' \
+              'http://ddl.escience.cn/pan/list'
+        self.session.get(url, headers=self.header, verify=False)
+
+    def oauth(self):
+        url = 'https://passport.escience.cn/oauth2/authorize'
+        data = {'clientId': '87142',
+                'clientName': '团队文档库',
+                'pageinfo': 'checkPassword',
+                'password': '%s' % self.passwd,
+                'userName': '%s' % self.userName}
+        self.session.post(url, headers=self.header, verify=False, data=data)
+
+    def oauth_again(self):
+        url = 'https://passport.escience.cn/oauth2/authorize?client_id=87142&redirect_uri=http://' \
+              'ddl.escience.cn/system/login/token&response_type=code&state=http://ddl.escience.cn/pan/list&theme=full'
+        data = {'act': 'Validate',
+                'pageinfo': 'userinfo',
+                'password': '%s' % passwd,
+                'theme': 'full',
+                'userName': '%s' % userName}
+        r = self.session.post(url, headers=self.header, data=data, verify=False, allow_redirects=False)
+        r_location = r.headers['Location']
+        return r_location
+
+    def location(self):
+        location_url = self.oauth_again()
+        self.session.post(url=location_url, headers=self.header, allow_redirects=False)
+
+    def list_file(self, search_keyword):
         url = 'http://ddl.escience.cn/pan/list?func=query'
         data = {
 
@@ -137,7 +92,7 @@ class escience:
 
         }
 
-        r = self.session.post(url=url, headers=headers, data=data, allow_redirects=False)
+        r = self.session.post(url=url, headers=self.header, data=data, allow_redirects=False)
         r_dict = json.loads(r.text)['children']  # 搜索到的结果集
         d = [i for i in r_dict if i['itemType'] != 'Folder']
         x = PrettyTable()
@@ -179,17 +134,8 @@ def get_file(**options):
     file_path = id_file_dict[download_id]
 
     url = 'http://ddl.escience.cn/pan/download?path=%s' % file_path
-    headers = {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-               'Accept-Encoding': 'gzip, deflate',
-               'Accept-Language': 'zh-CN,zh;q=0.9',
-               'Connection': 'keep-alive',
-               'Host': 'ddl.escience.cn',
-               'Referer': 'http://ddl.escience.cn/pan/list',
-               'Upgrade-Insecure-Requests': '1',
-               'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 '
-                             '(KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36'}
 
-    with closing(e.session.get(url, headers=headers, verify=False, stream=True)) as response:
+    with closing(e.session.get(url, headers=e.header, verify=False, stream=True)) as response:
         chunk_size = 1024  # 单次请求最大值
         content_size = int(response.headers['content-length'])  # 内容体总大小
         file_name = '%s' % unquote(file_path.split('%2F')[-1])
