@@ -10,14 +10,15 @@
 @file: escience.py
 @time: 18/4/24 下午2:41
 """
+import configparser
+import json
 import os
 import sys
+import time
 from contextlib import closing
 from urllib.parse import unquote
 
 import click
-import configparser
-import json
 import requests
 from prettytable import PrettyTable
 
@@ -30,6 +31,8 @@ conf.read('conf.cfg')
 userName = conf.get('user_info', 'userName')
 passwd = conf.get('user_info', 'passwd')
 download_dir = conf.get('file', 'download_path')
+if download_dir == '':
+    download_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 # global_params保存每次请求的返回参数
@@ -40,37 +43,31 @@ class escience:
         self.passwd = passwd
         self.session = requests.session()
         self.header = {'Accept': 'application/json, text/javascript, */*; q=0.01',
-                   'Accept-Encoding': 'gzip, deflate',
-                   'Accept-Language': 'zh-CN,zh;q=0.9',
-                   'Connection': 'keep-alive',
-                   'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                   'Host': 'ddl.escience.cn',
-                   'Origin': 'http://ddl.escience.cn',
-                   'Referer': 'http://ddl.escience.cn/pan/list',
-                   'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) '
-                                 'AppleWebKit/537.75.14 (KHTML, like Gecko) Version/7.0.3 '
-                                 'Safari/7046A194A',
-                   'X-Requested-With': 'XMLHttpRequest'}
+                       'Accept-Encoding': 'gzip, deflate',
+                       'Accept-Language': 'zh-CN,zh;q=0.9',
+                       'Connection': 'keep-alive',
+                       'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                       'Host': 'ddl.escience.cn',
+                       'Origin': 'http://ddl.escience.cn',
+                       'Referer': 'http://ddl.escience.cn/pan/list',
+                       'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) '
+                                     'AppleWebKit/537.75.14 (KHTML, like Gecko) Version/7.0.3 '
+                                     'Safari/7046A194A',
+                       'X-Requested-With': 'XMLHttpRequest'}
 
-    def oauth_page(self):
-        url = 'https://passport.escience.cn/oauth2/authorize?response_type=code&redirect_uri=' \
-              'http://ddl.escience.cn/system/login/token&client_id=87143&theme=full&state=' \
-              'http://ddl.escience.cn/pan/list'
-        self.session.get(url, headers=self.header, verify=False)
-
-    def oauth(self):
+    def login_page(self):
         url = 'https://passport.escience.cn/oauth2/authorize'
-        data = {'clientId': '87142',
-                'clientName': '团队文档库',
-                'pageinfo': 'checkPassword',
-                'password': '%s' % self.passwd,
-                'userName': '%s' % self.userName}
-        r = self.session.post(url, headers=self.header, verify=False, data=data)
-        if 'true' not in r.text:
-            logger().error('登录失败！请在配置文件填写正确的账号和密码')
-            sys.exit(0)
+        params = {
+            "response_type": "code",
+            "redirect_uri": "http%3A%2F%2Fddl.escience.cn%2Fsystem%2Flogin%2Ftoken",
+            "client_id": "87142",
+            "theme": "full",
+            "state": "http%3A%2F%2Fddl.escience.cn%2Fpan%2Flist"
+        }
+        r = self.session.get(url, params=params, headers=self.header, verify=False)
+        logger().debug('login_page Response:' + r.text)
 
-    def oauth_again(self):
+    def auth(self):
         url = 'https://passport.escience.cn/oauth2/authorize?client_id=87142&redirect_uri=http://' \
               'ddl.escience.cn/system/login/token&response_type=code&state=http://ddl.escience.cn/pan/list&theme=full'
         data = {'act': 'Validate',
@@ -80,26 +77,28 @@ class escience:
                 'userName': '%s' % userName}
         r = self.session.post(url, headers=self.header, data=data, verify=False, allow_redirects=False)
         r_location = r.headers['Location']
-        return r_location
+        if r_location != '':
+            logger().info("登陆成功！")
+            return r_location
 
-    def location(self):
-        location_url = self.oauth_again()
-        self.session.post(url=location_url, headers=self.header, allow_redirects=False)
+    def location_302(self):
+        location_url = self.auth()
+        r = self.session.post(url=location_url, headers=self.header, allow_redirects=False)
+        logger().info('访问重定向地址：' + location_url)
 
     def list_file(self, search_keyword):
         url = 'http://ddl.escience.cn/pan/list?func=query'
         data = {
-
             'path': '',
             'sortType': '',
-            'tokenKey': '1524672146487',
+            'tokenKey': '%s'%int(time.time()*1000),
             'keyWord': '%s' % search_keyword,
-
         }
 
-        r = self.session.post(url=url, headers=self.header, data=data, allow_redirects=False)
+        r = self.session.post(url=url, headers=self.header, data=data)
         r_dict = json.loads(r.text)['children']  # 搜索到的结果集
         d = [i for i in r_dict if i['itemType'] != 'Folder']
+        logger().debug("搜索出的文件："+str(d))
         x = PrettyTable()
         x.field_names = ["ID", "FileName", "CreateTime", "Size"]
 
@@ -116,14 +115,12 @@ class escience:
 
 
 @click.command()
-@click.option('-d', default=0, help='Download Files By Index Number')
+@click.option('-d', default=time.time(), help='Download Files By Index Number')
 @click.option('-s', default='', help='Search Files')
 def get_file(**options):
     e = escience(userName, passwd)
-    e.oauth_page()
-    e.oauth()
-    e.oauth_again()
-    e.location()
+    e.login_page()
+    e.location_302()
     search_keyord = options['s']
     download_id = options['d']
     global_params = e.list_file(search_keyord)
@@ -131,20 +128,23 @@ def get_file(**options):
         conf.set('user_info', 'search_keyord', search_keyord)
         conf.write(open("conf.cfg", "w"))
         e.list_file(search_keyord)
+        # 打印搜索结果
         print(global_params['table_list'])
+        # 将搜索的关键字保存，退出程序，打印显示搜索结果
         return
+
+    #下载前，再次请求查询，保证不下错文件
     search_keyord = conf.get('user_info', 'search_keyord')
     global_params = e.list_file(search_keyord)
     id_file_dict = global_params['id_file_dict']
-    logger().info('id_file_dict:'+str(id_file_dict))
+    logger().debug('id_file_dict:' + str(id_file_dict))
     try:
         file_path = id_file_dict[download_id]
     except KeyError:
         logger().error("ID对应文件不存在，请检查，或重新搜索！")
         sys.exit(0)
-
     url = 'http://ddl.escience.cn/pan/download?path=%s' % file_path
-
+    logger().info('远程文件链接：'+url)
     with closing(e.session.get(url, headers=e.header, verify=False, stream=True)) as response:
         chunk_size = 1024  # 单次请求最大值
         content_size = int(response.headers['content-length'])  # 内容体总大小
@@ -155,7 +155,6 @@ def get_file(**options):
             for data in response.iter_content(chunk_size=chunk_size):
                 file.write(data)
                 progress.refresh(count=len(data))
-
         file.close()
         print('文件下载路径[%s]' % download_dir)
 
