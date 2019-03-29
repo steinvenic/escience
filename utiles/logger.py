@@ -13,7 +13,7 @@ import logging
 
 
 def logger():
-    logging.basicConfig(level=logging.DEBUG,
+    logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
 
     # 创建一个logger

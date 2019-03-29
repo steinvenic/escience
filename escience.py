@@ -31,8 +31,9 @@ conf.read('conf.cfg')
 userName = conf.get('user_info', 'userName')
 passwd = conf.get('user_info', 'passwd')
 download_dir = conf.get('file', 'download_path')
+current_dir = os.path.dirname(os.path.abspath(__file__))
 if download_dir == '':
-    download_dir = os.path.dirname(os.path.abspath(__file__))
+    download_dir = current_dir
 
 
 # global_params保存每次请求的返回参数
@@ -65,6 +66,9 @@ class escience:
             "state": "http%3A%2F%2Fddl.escience.cn%2Fpan%2Flist"
         }
         r = self.session.get(url, params=params, headers=self.header, verify=False)
+        if r.status_code!=200:
+            logger().error("请求登录界面失败，请检查是否开启了代理或其它因素，导致连接不安全！")
+            sys.exit(0)
         logger().debug('login_page Response:' + r.text)
 
     def auth(self):
@@ -76,15 +80,19 @@ class escience:
                 'theme': 'full',
                 'userName': '%s' % userName}
         r = self.session.post(url, headers=self.header, data=data, verify=False, allow_redirects=False)
-        r_location = r.headers['Location']
-        if r_location != '':
+        try:
+            r_location = r.headers['Location']
             logger().info("登陆成功！")
             return r_location
+        except:
+            logger().error("登录失败，请检查配置文件中账号、密码是否正确！")
+            sys.exit(0)
+
 
     def location_302(self):
         location_url = self.auth()
-        r = self.session.post(url=location_url, headers=self.header, allow_redirects=False)
-        logger().info('访问重定向地址：' + location_url)
+        self.session.post(url=location_url, headers=self.header, allow_redirects=False)
+        logger().debug('访问重定向地址：' + location_url)
 
     def list_file(self, search_keyword):
         url = 'http://ddl.escience.cn/pan/list?func=query'
@@ -151,13 +159,21 @@ def get_file(**options):
         file_name = '%s' % unquote(file_path.split('%2F')[-1])
         progress = ProgressBar(file_name, total=content_size,
                                unit="KB", chunk_size=chunk_size, run_status="正在下载", fin_status="下载完成")
-        with open(os.path.join(download_dir, file_name), "wb") as file:
-            for data in response.iter_content(chunk_size=chunk_size):
-                file.write(data)
-                progress.refresh(count=len(data))
-        file.close()
-        print('文件下载路径[%s]' % download_dir)
-
+        try:
+            with open(os.path.join(download_dir, file_name), "wb") as file:
+                for data in response.iter_content(chunk_size=chunk_size):
+                    file.write(data)
+                    progress.refresh(count=len(data))
+            file.close()
+            print('文件下载路径【%s】' % download_dir)
+        except FileNotFoundError:
+            logger().warn("配置文件下载目录设置无效，自动更换下载路径为【%s】"%current_dir)
+            with open((file_name), "wb") as file:
+                for data in response.iter_content(chunk_size=chunk_size):
+                    file.write(data)
+                    progress.refresh(count=len(data))
+            file.close()
+            print('文件下载路径【%s】' % current_dir)
 
 if __name__ == '__main__':
     get_file()
