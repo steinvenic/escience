@@ -4,7 +4,7 @@
 # 安装  
 * `Python 3`
 * `pip install -r requirement.txt`
-* 在`conf.cfg`中配置自己的账号和密码
+* 在`conf.cfg`中配置自己的账号和密码及下载路径
 
 #使用  
 * `python escience.py --help`===>显示帮助
