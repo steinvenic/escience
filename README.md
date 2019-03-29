@@ -10,3 +10,4 @@
 * `python escience.py --help`===>显示帮助
 * `python escience.py -s somefile`===>以关键字`somefile`搜索相关文件
 * `python escience.py -d 0`===>下载序号为0的文件
+![avatar](https://github.com/steinvenic/escience/blob/master/usage.png)
