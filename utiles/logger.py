@@ -21,7 +21,7 @@ def logger():
     logger.setLevel(logging.INFO)
 
     # 创建一个handler，用于写入日志文件
-    fh = logging.FileHandler('log.txt',encoding='utf-8')
+    fh = logging.FileHandler('log.txt', encoding='utf-8')
     fh.setLevel(logging.DEBUG)
 
     # 再创建一个handler，用于输出到控制台
@@ -31,13 +31,14 @@ def logger():
     # 定义handler的输出格式
     formatter = logging.Formatter(
         '[%(asctime)s][%(thread)d][%(filename)s][line: %(lineno)d][%(levelname)s] ## %(message)s')
-    fh.setFormatter(formatter,)
+    fh.setFormatter(formatter, )
     ch.setFormatter(formatter)
 
     # 给logger添加handler
     if not logger.handlers:
         logger.addHandler(fh)
     return logger
+
 
 if __name__ == '__main__':
     logger().info("info")

@@ -21,17 +21,18 @@ from urllib.parse import unquote
 import click
 import requests
 from prettytable import PrettyTable
-
 from utiles.logger import logger
 from utiles.process_bar import ProgressBar
 
 requests.packages.urllib3.disable_warnings()
+current_dir = os.path.dirname(os.path.abspath(__file__))
 conf = configparser.ConfigParser()
-conf.read('conf.cfg')
+conf_file = os.path.join(current_dir, 'conf.cfg')
+logger().info(conf_file)
+conf.read(conf_file)
 userName = conf.get('user_info', 'userName')
 passwd = conf.get('user_info', 'passwd')
 download_dir = conf.get('file', 'download_path')
-current_dir = os.path.dirname(os.path.abspath(__file__))
 if download_dir == '':
     download_dir = current_dir
 
@@ -66,7 +67,7 @@ class escience:
             "state": "http%3A%2F%2Fddl.escience.cn%2Fpan%2Flist"
         }
         r = self.session.get(url, params=params, headers=self.header, verify=False)
-        if r.status_code!=200:
+        if r.status_code != 200:
             logger().error("请求登录界面失败，请检查是否开启了代理或其它因素，导致连接不安全！")
             sys.exit(0)
         logger().debug('login_page Response:' + r.text)
@@ -88,7 +89,6 @@ class escience:
             logger().error("登录失败，请检查配置文件中账号、密码是否正确！")
             sys.exit(0)
 
-
     def location_302(self):
         location_url = self.auth()
         self.session.post(url=location_url, headers=self.header, allow_redirects=False)
@@ -99,14 +99,14 @@ class escience:
         data = {
             'path': '',
             'sortType': '',
-            'tokenKey': '%s'%int(time.time()*1000),
+            'tokenKey': '%s' % int(time.time() * 1000),
             'keyWord': '%s' % search_keyword,
         }
 
         r = self.session.post(url=url, headers=self.header, data=data)
         r_dict = json.loads(r.text)['children']  # 搜索到的结果集
         d = [i for i in r_dict if i['itemType'] != 'Folder']
-        logger().debug("搜索出的文件："+str(d))
+        logger().debug("搜索出的文件：" + str(d))
         x = PrettyTable()
         x.field_names = ["ID", "FileName", "CreateTime", "Size"]
 
@@ -141,7 +141,7 @@ def get_file(**options):
         # 将搜索的关键字保存，退出程序，打印显示搜索结果
         return
 
-    #下载前，再次请求查询，保证不下错文件
+    # 下载前，再次请求查询，保证不下错文件
     search_keyord = conf.get('user_info', 'search_keyord')
     global_params = e.list_file(search_keyord)
     id_file_dict = global_params['id_file_dict']
@@ -152,7 +152,7 @@ def get_file(**options):
         logger().error("ID对应文件不存在，请检查，或重新搜索！")
         sys.exit(0)
     url = 'http://ddl.escience.cn/pan/download?path=%s' % file_path
-    logger().info('远程文件链接：'+url)
+    logger().info('远程文件链接：' + url)
     with closing(e.session.get(url, headers=e.header, verify=False, stream=True)) as response:
         chunk_size = 1024  # 单次请求最大值
         content_size = int(response.headers['content-length'])  # 内容体总大小
@@ -167,13 +167,14 @@ def get_file(**options):
             file.close()
             print('文件下载路径【%s】' % download_dir)
         except FileNotFoundError:
-            logger().warn("配置文件下载目录设置无效，自动更换下载路径为【%s】"%current_dir)
+            logger().warn("配置文件下载目录设置无效，自动更换下载路径为【%s】" % current_dir)
             with open((file_name), "wb") as file:
                 for data in response.iter_content(chunk_size=chunk_size):
                     file.write(data)
                     progress.refresh(count=len(data))
             file.close()
             print('文件下载路径【%s】' % current_dir)
+
 
 if __name__ == '__main__':
     get_file()

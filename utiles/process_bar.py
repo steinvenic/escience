@@ -9,6 +9,8 @@
 @file: process_bar.py
 @time: 2019/3/28 23:07
 """
+
+
 class ProgressBar(object):
 
     def __init__(self, title,
