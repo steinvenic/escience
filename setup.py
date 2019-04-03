@@ -121,8 +121,6 @@ setup(
     extras_require=EXTRAS,
     include_package_data=True,
     license='MIT',
-    data_files=[('escience', ['config/conf.cfg'],)
-                ],
     classifiers=[
         # Trove classifiers
         # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
