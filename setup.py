@@ -50,7 +50,7 @@ if sys_version == 'Linux':
     linux_config_file = '%s/escience.cfg' % os.environ['HOME']
     shutil.move(config_file, linux_config_file)
 elif sys_version == 'Windows':
-    shutil.move(config_file, windows_config_file)
+    shutil.copy(config_file, windows_config_file)
 
 # Load the package's __version__.py module as a dictionary.
 about = {}
@@ -121,6 +121,8 @@ setup(
     extras_require=EXTRAS,
     include_package_data=True,
     license='MIT',
+    data_files=[('config', ['escience.cfg'],)
+                ],
     classifiers=[
         # Trove classifiers
         # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
