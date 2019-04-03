@@ -13,6 +13,7 @@
 import configparser
 import json
 import os
+import shutil
 import sys
 import time
 import platform
@@ -28,12 +29,20 @@ from utiles.process_bar import ProgressBar
 requests.packages.urllib3.disable_warnings()
 current_dir = os.path.dirname(os.path.abspath(__file__))
 conf = configparser.ConfigParser()
+downloadDirName = 'escienceDownload'
+downloadDir = ''
 sys_version = platform.system()
 config_file = ''
 if sys_version=='Linux':
     config_file = '%s/escience.cfg' % os.environ['HOME']
+    if not os.path.exists('%s/%s' % (os.environ['HOME'],downloadDir)):
+        os.mkdir('%s/%s' % (os.environ['HOME'],downloadDir))
+        downloadDir = '%s/%s' % (os.environ['HOME'],downloadDir)
 elif sys_version=='Windows':
     config_file = 'D:\escience.cfg'
+    if not os.path.exists('D:\%s' % downloadDir):
+        os.mkdir('D:\%s' % downloadDir)
+        downloadDir = 'D:\%s' % downloadDir
 conf.read(config_file)
 userName = conf.get('user_info', 'userName')
 passwd = conf.get('user_info', 'passwd')
