@@ -1,5 +1,5 @@
 # escience
-科研在线(http://ddl.escience.cn)，网盘CTL客户端
+科研在线网盘CTL客户端http://ddl.escience.cn
 
 # 安装  
 * 环境`Python 3`

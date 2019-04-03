@@ -19,7 +19,7 @@ DESCRIPTION = 'escience ClL'
 URL = 'https://github.com/steinvenic/escience'
 EMAIL = 'steinvenior@gmail.com'
 AUTHOR = 'steinvenior'
-REQUIRES_PYTHON = '>=3.6.0'
+REQUIRES_PYTHON = '>=3'
 VERSION = None
 
 # What packages are required for this module to be executed?
