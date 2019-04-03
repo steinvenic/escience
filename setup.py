@@ -121,7 +121,7 @@ setup(
     extras_require=EXTRAS,
     include_package_data=True,
     license='MIT',
-    data_files=[('config', ['escience.cfg'],)
+    data_files=[('escience', ['config/escience.cfg'],)
                 ],
     classifiers=[
         # Trove classifiers
