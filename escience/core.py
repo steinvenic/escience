@@ -28,7 +28,7 @@ from utiles.process_bar import ProgressBar
 requests.packages.urllib3.disable_warnings()
 current_dir = os.path.dirname(os.path.abspath(__file__))
 conf = configparser.ConfigParser()
-linux_config_file = '/etc/escience.conf'
+linux_config_file = '%s/escience.conf' % os.environ['HOME']
 windows_config_file = 'D:\escience.conf'
 sys_version = platform.system()
 if sys_version=='Linux':

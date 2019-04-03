@@ -43,7 +43,7 @@ except FileNotFoundError:
     long_description = DESCRIPTION
 
 #Move config file
-linux_config_file = '/etc/escience.cfg'
+linux_config_file = '%s/escience.cfg' % os.environ['HOME']
 windows_config_file = 'D:\escience.cfg'
 config_file = './config/escience.cfg'
 sys_version = platform.system()
