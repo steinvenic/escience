@@ -32,11 +32,9 @@ linux_config_file = '%s/escience.conf' % os.environ['HOME']
 windows_config_file = 'D:\escience.conf'
 sys_version = platform.system()
 if sys_version=='Linux':
-    cf = conf.readfp(linux_config_file)
-    conf.read(cf)
+    conf.read(linux_config_file)
 elif sys_version=='Windows':
-    cf = conf.readfp(windows_config_file)
-    conf.read(cf)
+    conf.read(windows_config_file)
 userName = conf.get('user_info', 'userName')
 passwd = conf.get('user_info', 'passwd')
 download_dir = conf.get('file', 'download_path')
@@ -141,7 +139,8 @@ def get_file(**options):
     global_params = e.list_file(search_keyord)
     if search_keyord != '':
         conf.set('user_info', 'search_keyord', search_keyord)
-        conf.write(cf)
+        with open(linux_config_file,'w') as cf:
+            conf.write(cf)
         e.list_file(search_keyord)
         # 打印搜索结果
         print(global_params['table_list'])
