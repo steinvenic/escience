@@ -38,11 +38,13 @@ if sys_version=='Linux':
     if not os.path.exists('%s/%s' % (os.environ['HOME'],downloadDir)):
         os.mkdir('%s/%s' % (os.environ['HOME'],downloadDir))
         downloadDir = '%s/%s' % (os.environ['HOME'],downloadDir)
+        logger().info('downloadDir:-->%s' %downloadDir)
 elif sys_version=='Windows':
     config_file = 'D:\escience.cfg'
     if not os.path.exists('D:\%s' % downloadDir):
         os.mkdir('D:\%s' % downloadDir)
         downloadDir = 'D:\%s' % downloadDir
+        logger().info('downloadDir:-->%s' % downloadDir)
 conf.read(config_file)
 userName = conf.get('user_info', 'userName')
 passwd = conf.get('user_info', 'passwd')
