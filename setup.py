@@ -6,9 +6,9 @@
 
 import io
 import os
+import platform
 import shutil
 import sys
-import platform
 from shutil import rmtree
 
 from setuptools import find_packages, setup, Command
@@ -42,14 +42,14 @@ try:
 except FileNotFoundError:
     long_description = DESCRIPTION
 
-#Move config file
+# Move config file
 windows_config_file = 'D:\escience.cfg'
 config_file = './config/escience.cfg'
 sys_version = platform.system()
-if sys_version=='Linux':
+if sys_version == 'Linux':
     linux_config_file = '%s/escience.cfg' % os.environ['HOME']
-    shutil.move(config_file,linux_config_file)
-elif sys_version=='Windows':
+    shutil.move(config_file, linux_config_file)
+elif sys_version == 'Windows':
     shutil.move(config_file, windows_config_file)
 
 # Load the package's __version__.py module as a dictionary.

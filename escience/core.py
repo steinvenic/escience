@@ -13,16 +13,16 @@
 import configparser
 import json
 import os
-import shutil
+import platform
 import sys
 import time
-import platform
 from contextlib import closing
 from urllib.parse import unquote
 
 import click
 import requests
 from prettytable import PrettyTable
+
 from utiles.logger import logger
 from utiles.process_bar import ProgressBar
 
@@ -33,12 +33,12 @@ downloadDirName = 'escienceDownload'
 downloadDir = ''
 sys_version = platform.system()
 config_file = ''
-if sys_version=='Linux':
+if sys_version == 'Linux':
     config_file = '%s/escience.cfg' % os.environ['HOME']
-    if not os.path.exists('%s/%s' % (os.environ['HOME'],downloadDirName)):
-        os.mkdir('%s/%s' % (os.environ['HOME'],downloadDirName))
+    if not os.path.exists('%s/%s' % (os.environ['HOME'], downloadDirName)):
+        os.mkdir('%s/%s' % (os.environ['HOME'], downloadDirName))
 
-elif sys_version=='Windows':
+elif sys_version == 'Windows':
     config_file = 'D:\escience.cfg'
     if not os.path.exists('D:\%s' % downloadDirName):
         os.mkdir('D:\%s' % downloadDirName)
@@ -49,7 +49,7 @@ passwd = conf.get('user_info', 'passwd')
 download_dir = conf.get('file', 'download_path')
 if download_dir == '':
     if sys_version == 'Linux':
-        download_dir = '%s/%s' % (os.environ['HOME'],downloadDirName)
+        download_dir = '%s/%s' % (os.environ['HOME'], downloadDirName)
     elif sys_version == 'Windows':
         download_dir = 'D:\%s' % downloadDirName
 
@@ -151,7 +151,7 @@ def get_file(**options):
     global_params = e.list_file(search_keyord)
     if search_keyord != '':
         conf.set('user_info', 'search_keyord', search_keyord)
-        with open(config_file,'w') as cf:
+        with open(config_file, 'w') as cf:
             conf.write(cf)
         e.list_file(search_keyord)
         # 打印搜索结果
@@ -178,7 +178,7 @@ def get_file(**options):
         progress = ProgressBar(file_name, total=content_size,
                                unit="KB", chunk_size=chunk_size, run_status="正在下载", fin_status="下载完成")
         try:
-            logger().info('download_dir-->%s' %download_dir)
+            logger().info('download_dir-->%s' % download_dir)
             with open(os.path.join(download_dir, file_name), "wb") as file:
                 for data in response.iter_content(chunk_size=chunk_size):
                     file.write(data)
@@ -196,4 +196,4 @@ def get_file(**options):
 
 
 if __name__ == '__main__':
-    get_file(['-d','0'])
+    pass
