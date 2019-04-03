@@ -37,20 +37,21 @@ if sys_version=='Linux':
     config_file = '%s/escience.cfg' % os.environ['HOME']
     if not os.path.exists('%s/%s' % (os.environ['HOME'],downloadDirName)):
         os.mkdir('%s/%s' % (os.environ['HOME'],downloadDirName))
-        downloadDir = '%s/%s' % (os.environ['HOME'],downloadDirName)
-        logger().info('downloadDir:-->%s' %downloadDir)
+
 elif sys_version=='Windows':
     config_file = 'D:\escience.cfg'
     if not os.path.exists('D:\%s' % downloadDirName):
         os.mkdir('D:\%s' % downloadDirName)
-        downloadDir = 'D:\%s' % downloadDirName
-        logger().info('downloadDir:-->%s' % downloadDir)
+
 conf.read(config_file)
 userName = conf.get('user_info', 'userName')
 passwd = conf.get('user_info', 'passwd')
 download_dir = conf.get('file', 'download_path')
 if download_dir == '':
-    download_dir = downloadDir
+    if sys_version == 'Linux':
+        download_dir = '%s/%s' % (os.environ['HOME'],downloadDirName)
+    elif sys_version == 'Windows':
+        download_dir = 'D:\%s' % downloadDirName
 
 
 # global_params保存每次请求的返回参数
@@ -195,4 +196,4 @@ def get_file(**options):
 
 
 if __name__ == '__main__':
-    get_file()
+    get_file(['-d','0'])
