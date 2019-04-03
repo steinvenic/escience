@@ -134,7 +134,7 @@ def get_file(**options):
     global_params = e.list_file(search_keyord)
     if search_keyord != '':
         conf.set('user_info', 'search_keyord', search_keyord)
-        conf.write(open("conf.cfg", "w"))
+        # conf.write(open("conf.cfg", "w"))
         e.list_file(search_keyord)
         # 打印搜索结果
         print(global_params['table_list'])
