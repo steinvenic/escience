@@ -48,7 +48,7 @@ config_file = './config/escience.cfg'
 sys_version = platform.system()
 if sys_version == 'Linux':
     linux_config_file = '%s/escience.cfg' % os.environ['HOME']
-    shutil.move(config_file, linux_config_file)
+    shutil.copy(config_file, linux_config_file)
 elif sys_version == 'Windows':
     shutil.copy(config_file, windows_config_file)
 
