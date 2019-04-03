@@ -48,7 +48,7 @@ userName = conf.get('user_info', 'userName')
 passwd = conf.get('user_info', 'passwd')
 download_dir = conf.get('file', 'download_path')
 if download_dir == '':
-    download_dir = current_dir
+    download_dir = downloadDir
 
 
 # global_params保存每次请求的返回参数
