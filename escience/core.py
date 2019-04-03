@@ -177,6 +177,7 @@ def get_file(**options):
         progress = ProgressBar(file_name, total=content_size,
                                unit="KB", chunk_size=chunk_size, run_status="正在下载", fin_status="下载完成")
         try:
+            logger().info('download_dir-->%s' %download_dir)
             with open(os.path.join(download_dir, file_name), "wb") as file:
                 for data in response.iter_content(chunk_size=chunk_size):
                     file.write(data)
