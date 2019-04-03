@@ -28,13 +28,13 @@ from utiles.process_bar import ProgressBar
 requests.packages.urllib3.disable_warnings()
 current_dir = os.path.dirname(os.path.abspath(__file__))
 conf = configparser.ConfigParser()
-linux_config_file = '%s/escience.conf' % os.environ['HOME']
-windows_config_file = 'D:\escience.conf'
 sys_version = platform.system()
+config_file = ''
 if sys_version=='Linux':
-    conf.read(linux_config_file)
+    config_file = '%s/escience.cfg' % os.environ['HOME']
 elif sys_version=='Windows':
-    conf.read(windows_config_file)
+    config_file = 'D:\escience.cfg'
+conf.read(config_file)
 userName = conf.get('user_info', 'userName')
 passwd = conf.get('user_info', 'passwd')
 download_dir = conf.get('file', 'download_path')
@@ -139,7 +139,7 @@ def get_file(**options):
     global_params = e.list_file(search_keyord)
     if search_keyord != '':
         conf.set('user_info', 'search_keyord', search_keyord)
-        with open(linux_config_file,'w') as cf:
+        with open(config_file,'w') as cf:
             conf.write(cf)
         e.list_file(search_keyord)
         # 打印搜索结果
