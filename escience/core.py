@@ -15,6 +15,7 @@ import json
 import os
 import sys
 import time
+import platform
 from contextlib import closing
 from urllib.parse import unquote
 
@@ -27,9 +28,15 @@ from utiles.process_bar import ProgressBar
 requests.packages.urllib3.disable_warnings()
 current_dir = os.path.dirname(os.path.abspath(__file__))
 conf = configparser.ConfigParser()
-conf_file = os.path.join(current_dir, 'conf.cfg')
-logger().info(conf_file)
-conf.read(conf_file)
+linux_config_file = '/etc/escience.conf'
+windows_config_file = 'D:\escience.conf'
+sys_version = platform.system()
+if sys_version=='Linux':
+    cf = conf.readfp(linux_config_file)
+    conf.read(cf)
+elif sys_version=='Windows':
+    cf = conf.readfp(windows_config_file)
+    conf.read(cf)
 userName = conf.get('user_info', 'userName')
 passwd = conf.get('user_info', 'passwd')
 download_dir = conf.get('file', 'download_path')
@@ -134,7 +141,7 @@ def get_file(**options):
     global_params = e.list_file(search_keyord)
     if search_keyord != '':
         conf.set('user_info', 'search_keyord', search_keyord)
-        # conf.write(open("conf.cfg", "w"))
+        conf.write(cf)
         e.list_file(search_keyord)
         # 打印搜索结果
         print(global_params['table_list'])
