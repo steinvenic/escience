@@ -6,8 +6,6 @@
 
 import io
 import os
-import platform
-import shutil
 import sys
 from shutil import rmtree
 
@@ -19,7 +17,7 @@ DESCRIPTION = 'escience ClL'
 URL = 'https://github.com/steinvenic/escience'
 EMAIL = 'steinvenior@gmail.com'
 AUTHOR = 'steinvenior'
-REQUIRES_PYTHON = '>=3'
+REQUIRES_PYTHON = '>=3.3.2'
 VERSION = None
 
 # What packages are required for this module to be executed?
@@ -42,15 +40,6 @@ try:
 except FileNotFoundError:
     long_description = DESCRIPTION
 
-# Move config file
-# windows_config_file = 'D:\escience.cfg'
-# config_file = os.path.join(here,'config','escience.cfg')
-# sys_version = platform.system()
-# if sys_version == 'Linux':
-#     linux_config_file = '%s/escience.cfg' % os.environ['HOME']
-#     shutil.copy(config_file, linux_config_file)
-# elif sys_version == 'Windows':
-#     shutil.copy(config_file, windows_config_file)
 
 # Load the package's __version__.py module as a dictionary.
 about = {}
