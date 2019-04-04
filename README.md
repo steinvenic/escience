@@ -10,4 +10,4 @@
 * `escience --help`===>显示帮助
 * `escience -s somefile`===>以关键字`somefile`搜索相关文件
 * `escience -d 0`===>下载序号为0的文件
-![avatar](https://ibb.co/PCRfjbg)
+![avatar](https://i.ibb.co/DKNSW6Q/usage.png)
