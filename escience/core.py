@@ -30,6 +30,7 @@ requests.packages.urllib3.disable_warnings()
 current_dir = os.path.dirname(os.path.abspath(__file__))
 conf = configparser.ConfigParser()
 downloadDirName = 'escienceDownload'
+configFileName = 'escience.cfg'
 downloadDir = ''
 sys_version = platform.system()
 config_file = ''
@@ -37,11 +38,18 @@ if sys_version == 'Linux':
     config_file = '%s/escience.cfg' % os.environ['HOME']
     if not os.path.exists('%s/%s' % (os.environ['HOME'], downloadDirName)):
         os.mkdir('%s/%s' % (os.environ['HOME'], downloadDirName))
+    if not os.path.exists('%s/%s' % (os.environ['HOME'], configFileName)):
+        with open('%s/%s' % (os.environ['HOME'], configFileName),'w') as f:
+            f.writelines(['[user_info]\n', 'username = \n', 'passwd = \n', 'search_keyord = \n\n', '[file]\n',
+                          'download_path = '])
 
 elif sys_version == 'Windows':
     config_file = 'D:\escience.cfg'
     if not os.path.exists('D:\%s' % downloadDirName):
         os.mkdir('D:\%s' % downloadDirName)
+    if not os.path.exists('D:\%s' % configFileName):
+        with open('D:\%s' % configFileName,'w') as f:
+            f.writelines(['[user_info]\n','username = \n','passwd = \n','search_keyord = \n\n','[file]\n','download_path = '])
 
 conf.read(config_file)
 userName = conf.get('user_info', 'userName')
