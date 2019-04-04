@@ -44,7 +44,7 @@ except FileNotFoundError:
 
 # Move config file
 windows_config_file = 'D:\escience.cfg'
-config_file = './config/escience.cfg'
+config_file = os.path.join(here,'config','escience')
 sys_version = platform.system()
 if sys_version == 'Linux':
     linux_config_file = '%s/escience.cfg' % os.environ['HOME']
